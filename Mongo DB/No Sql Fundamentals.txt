@@ -1,0 +1,62 @@
+// Create database
+use foodieApp
+
+// Insert one restaurant
+db.restaurants.insertOne({
+    name: "Spice Villa",
+    cuisine: "Indian",
+    rating: 4.7,
+    location: {
+        city: "Ahmedabad",
+        area: "Navrangpura"
+    }
+});
+
+// Insert three more restaurants
+db.restaurants.insertMany([
+{
+    name: "Pizza Paradise",
+    cuisine: "Italian",
+    rating: 4.5,
+    location: {
+        city: "Ahmedabad",
+        area: "Satellite"
+    },
+    menu: [
+        "Margherita Pizza",
+        "Garlic Bread",
+        "Pasta Alfredo"
+    ]
+},
+{
+    name: "Dragon Bowl",
+    cuisine: "Chinese",
+    rating: 4.3,
+    location: {
+        city: "Ahmedabad",
+        area: "CG Road"
+    },
+    menu: [
+        "Hakka Noodles",
+        "Manchurian",
+        "Fried Rice"
+    ]
+},
+{
+    name: "Burger Point",
+    cuisine: "Fast Food",
+    rating: 4.2,
+    location: {
+        city: "Ahmedabad",
+        area: "Maninagar"
+    },
+    menu: [
+        "Veg Burger",
+        "French Fries",
+        "Cold Coffee"
+    ]
+}
+]);
+
+// Display all documents
+db.restaurants.find().pretty();
