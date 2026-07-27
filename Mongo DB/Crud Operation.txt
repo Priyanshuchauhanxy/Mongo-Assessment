@@ -1,0 +1,70 @@
+
+// Task 1: Create 'restaurants' collection and insert one document
+
+use my_database
+
+db.restaurants.insertOne({
+    name: "Burger Hub",
+    cuisine: "Fast Food",
+    location: "Ahmedabad",
+    rating: 4.3
+});
+
+// Task 2: Insert 3 movie documents into 'movies' collection
+
+db.movies.insertMany([
+{
+    title: "Squid Game Season 3",
+    genre: "Thriller",
+    releaseYear: 2025,
+    imdbRating: 8.2
+},
+{
+    title: "Mission: Impossible - The Final Reckoning",
+    genre: "Action",
+    releaseYear: 2025,
+    imdbRating: 7.6
+},
+{
+    title: "Saiyaara",
+    genre: "Romance",
+    releaseYear: 2025,
+    imdbRating: 8.0
+}
+]);
+
+// Task 3: Find products with price less than 1000
+
+
+db.flipkart_products.find(
+    {
+        price: { $lt: 1000 }
+    }
+);
+
+// Task 4: Update restaurant rating
+
+db.restaurants.updateOne(
+    {
+        name: "Burger Hub"
+    },
+    {
+        $set: {
+            rating: 4.7
+        }
+    }
+);
+
+// Verify update
+db.restaurants.find().pretty();
+
+// Task 5: Delete cancelled orders
+
+db.orders.deleteMany(
+    {
+        status: "cancelled"
+    }
+);
+
+// Verify remaining orders
+db.orders.find().pretty();

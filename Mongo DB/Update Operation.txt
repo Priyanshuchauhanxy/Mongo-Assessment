@@ -1,0 +1,69 @@
+
+// Task 1: Update playlist genre using $set
+
+db.playlists.updateOne(
+    {
+        name: "Evening Vibes"
+    },
+    {
+        $set: {
+            genre: "Chill"
+        }
+    }
+);
+
+// Task 2: Remove temporaryOffer field using $unset
+
+
+db.restaurants.updateMany(
+    {
+        offerExpired: true
+    },
+    {
+        $unset: {
+            temporaryOffer: ""
+        }
+    }
+);
+
+// Task 3: Add a new song to songs array using $push
+
+
+db.playlists.updateOne(
+    {
+        _id: 101
+    },
+    {
+        $push: {
+            songs: "Calm Waters"
+        }
+    }
+);
+
+// Task 4: Add 'trending' tag only once using $addToSet
+
+db.products.updateOne(
+    {
+        SKU: "F12345"
+    },
+    {
+        $addToSet: {
+            tags: "trending"
+        }
+    }
+);
+
+// Task 5: Flash SaleDecrease stock by 1 without allowing it to go below zero
+
+
+db.products.updateOne(
+    {
+        name: "Wireless Earbuds",
+        stock: { $gt: 0 }
+    },
+    {
+        $inc: {
+            stock: -1
+        }
+    }
+);

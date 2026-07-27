@@ -1,0 +1,138 @@
+
+// TASK 1: Create restaurants collection and insert date
+
+use restaurantDB
+
+db.restaurants.insertMany([
+{
+    name: "Pizza Palace",
+    cuisine: "Italian",
+    location: "Ahmedabad",
+    rating: 4.6
+},
+{
+    name: "Little Italy",
+    cuisine: "Italian",
+    location: "Surat",
+    rating: 4.8
+},
+{
+    name: "Dragon Wok",
+    cuisine: "Chinese",
+    location: "Ahmedabad",
+    rating: 4.5
+},
+{
+    name: "China Town",
+    cuisine: "Chinese",
+    location: "Surat",
+    rating: 4.4
+},
+{
+    name: "Spice Villa",
+    cuisine: "Indian",
+    location: "Ahmedabad",
+    rating: 4.7
+},
+{
+    name: "Bombay Tadka",
+    cuisine: "Indian",
+    location: "Vadodara",
+    rating: 4.3
+},
+{
+    name: "Cafe Delight",
+    cuisine: "Cafe",
+    location: "Ahmedabad",
+    rating: 4.2
+},
+{
+    name: "Pizza Hub",
+    cuisine: "Italian",
+    location: "Surat",
+    rating: 4.9
+},
+{
+    name: "Royal Chinese",
+    cuisine: "Chinese",
+    location: "Ahmedabad",
+    rating: 4.6
+},
+{
+    name: "Urban Cafe",
+    cuisine: "Cafe",
+    location: "Surat",
+    rating: 4.1
+]);
+
+// Find all Italian restaurants
+db.restaurants.find({
+    cuisine: "Italian"
+});
+
+
+// TASK 2: Single Field Index
+
+// BEFORE creating the index
+db.restaurants.find({
+    cuisine: "Italian"
+}).explain("executionStats");
+
+// Create index
+db.restaurants.createIndex({
+    cuisine: 1
+});
+
+// AFTER creating the index
+db.restaurants.find({
+    cuisine: "Italian"
+}).explain("executionStats");
+
+
+// TASK 3: Compound Index
+
+// Create compound index
+db.restaurants.createIndex({
+    cuisine: 1,
+    location: 1
+});
+
+// Query
+db.restaurants.find({
+    cuisine: "Chinese",
+    location: "Ahmedabad"
+}).explain("executionStats");
+
+
+// TASK 4: Drop Single Field Index
+
+// Drop cuisine index
+db.restaurants.dropIndex({
+    cuisine: 1
+});
+
+// Check performance again
+db.restaurants.find({
+    cuisine: "Italian"
+}).explain("executionStats");
+
+
+// TASK 5: Top 5 Pizza Restaurants in Surat
+
+// Create an index suitable for this query
+db.restaurants.createIndex({
+    cuisine: 1,
+    location: 1,
+    rating: -1
+});
+
+// Query
+db.restaurants.find({
+    cuisine: "Italian",
+    location: "Surat",
+    name: { $regex: "Pizza", $options: "i" }
+})
+.sort({
+    rating: -1
+})
+.limit(5);

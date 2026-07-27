@@ -1,0 +1,129 @@
+
+// Task 1: Find Orders from Last 30 Days
+
+db.orders.aggregate([
+{
+    $match: {
+        orderDate: {
+            $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+        }
+    }
+]);
+
+// Task 2: Total Amount Spent by Each User
+
+db.orders.aggregate([
+
+    // Calculate total amount for each order
+    {
+        $unwind: "$items"
+    },
+
+    // Group by userId
+    {
+        $group: {
+            _id: "$userId",
+            totalSpent: {
+                $sum: {
+                    $multiply: [
+                        "$items.quantity",
+                        "$items.price"
+                    ]
+                }
+            }
+        }
+    }
+
+]);
+
+// Task 3: Top 3 Highest Rated Cafes in Ahmedabad
+
+db.restaurants.aggregate([
+
+    {
+        $match: {
+            cuisine: "Cafe",
+            city: "Ahmedabad"
+        }
+    },
+
+    {
+        $sort: {
+            rating: -1
+        }
+    },
+
+    {
+        $limit: 3
+    }
+
+]);
+
+// Task 4: Total Box Office by Genre
+
+db.movies.aggregate([
+
+    {
+        $group: {
+            _id: "$genre",
+            totalCollection: {
+                $sum: "$boxOffice"
+            }
+        }
+    },
+
+    {
+        $project: {
+            _id: 0,
+            genre: "$_id",
+            totalCollection: 1
+        }
+    }
+
+]);
+
+// Task 5: Daily Sales Report Last 7 Days
+
+db.payments.aggregate([
+
+    // Payments from last 7 days
+    {
+        $match: {
+            paymentDate: {
+                $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+            }
+        }
+    },
+
+    // Group by payment date
+    {
+        $group: {
+            _id: {
+                $dateToString: {
+                    format: "%Y-%m-%d",
+                    date: "$paymentDate"
+                }
+            },
+            totalSales: {
+                $sum: "$amount"
+            }
+        }
+    },
+
+    // Clean output
+    {
+        $project: {
+            _id: 0,
+            date: "$_id",
+            totalSales: 1
+        }
+    },
+
+    // Sort by date
+    {
+        $sort: {
+            date: 1
+        }
+    }
+
+]);

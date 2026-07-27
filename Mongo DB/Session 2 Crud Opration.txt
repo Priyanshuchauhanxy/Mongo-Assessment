@@ -1,0 +1,40 @@
+
+// Task 1: Create and switch to database
+
+- use insta_clone_db
+
+// Verify current database
+
+- db
+
+// Task 2: Create 'posts' collection
+
+- db.createCollection("posts")
+
+// Task 3: Create 'stories' collection
+
+- db.createCollection("stories")
+
+// Insert a sample story document
+- db.stories.insertOne({
+    username: "john_doe",
+    image_url: "https://example.com/story1.jpg",
+    timestamp: new Date()
+})
+
+// Display the story
+- db.stories.find().pretty()
+
+// Task 4: Drop 'stories' collection
+
+- db.stories.drop()
+
+// Verify collections
+- show collections
+
+// Task 5: Drop entire database
+
+- db.dropDatabase()
+
+// Verify database deletion
+- show dbs
