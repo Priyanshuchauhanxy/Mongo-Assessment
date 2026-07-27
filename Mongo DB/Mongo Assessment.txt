@@ -1,0 +1,150 @@
+Section A — Concept Application
+
+1.Explain why a document-oriented NoSQL database like MongoDB is better suited for
+this situation than a relational database. In your answer, address schema flexibility, data nesting,
+and horizontal scalability — and describe at least one concrete trade-off of choosing MongoDB.
+
+--> MongoDB is a better choice for the food delivery startup because it offers:
+-Schema flexibility: allowing new fields to be added without modifying existing documents.
+-Nested document: making it easy to store related data such as menus and order items together.
+-Horizontal scalability : enabling the system to handle increasing users and orders efficiently.
+
+
+2.Describe the difference between insertOne and insertMany. Write the mongosh
+commands to create a database quickeats_db, create a collection orders, and insert two orders
+— one with insertOne and one batch of three orders with insertMany. Explain why insertMany is
+preferred over multiple insertOne calls for bulk inserts.
+
+--> Insert One : Only insert one record at the time 
+    Insert Many : More than one record inserted at the time 
+    
+    Command:-> use quickseats_db
+               db.createCollection("orders")
+               db.orders.insertOne({ order_id:1,
+                                     product_name:"Milk",
+                                     price:100
+                                   })
+               
+                db.orders.insertMany({
+                                     order_id:2,
+                                     product_name:"Clothes",
+                                     price:300
+                                    },
+                                    {
+                                     order_id:3,
+                                     product_name:"Toys",
+                                     price:500
+                                    },
+                                    {
+                                     order_id:4,
+                                     product_name:"Watch",
+                                     price:30
+                                    })    
+     insertMany() is preferred over multiple insertOne() calls because when inserting multiple documents, 
+     as it is faster, more efficient, and better suited for bulk operations.
+
+3.Write a MongoDB query using $in, $eq, and $gt to retrieve only matching orders. Also
+write a query that uses projection to return only customerName, totalAmount, and status, with
+results sorted by totalAmount descending and limited to 10 documents. Explain what each
+operator does in this context.
+
+--> Query using $in, $eq, and $gt : db.orders.find({
+                                    status: { $eq: "Delivered" },
+                                    restaurant: { $in: ["Pizza Hub", "Burger Point"] },
+                                    totalAmount: { $gt: 300 }
+                                   })
+                                     
+    Query with Projection, Sorting, and Limit : db.orders.find(
+                                                {},
+                                                {
+                                                   _id: 0,
+                                                customerName: 1,
+                                                totalAmount: 1,
+                                                status: 1
+                                                  }
+                                                 ) 
+                                              .sort({ totalAmount: -1 })
+                                              .limit(10) 
+   $in: Matches any value from the given list.
+   $eq: Matches an exact value.
+   $gt: Matches values greater than the given value.
+   Projection: Returns only customerName, totalAmount, and status.
+   sort({ totalAmount: -1 }): Sorts by highest totalAmount first.
+   limit(10): Returns only the first 10 documents.
+
+4.Explain the difference between $set, $push, and $addToSet. Then write the
+updateOne command that: sets status to 'confirmed' and restaurantNote to 'Order accepted',
+and pushes {event: 'confirmed', time: new Date()} into the statusHistory array. Justify which
+operator you chose for each field.
+
+--> Diffrences: $set: Updates or adds a field with a new value.
+                $push: Adds a new element to an array.
+                $addToSet: Adds an element to an array only if it does not already exist.
+
+    Query: db.orders.updateOne(
+              { orderId: 101 },
+              {
+             $set: {
+            status: "confirmed",
+            restaurantNote: "Order accepted"
+            },
+            $push: {
+           statusHistory: {
+           event: "confirmed",
+           time: new Date()
+           }
+           }
+         }
+         )           
+   -$set is used for status and restaurantNote because these fields need to be updated with new values.
+   -$push is used for statusHistory because a new event should be appended to the existing array.
+
+5.Write a MongoDB aggregation pipeline using $match, $group, $project, and $sort to
+produce this report. Explain what each stage does and why aggregation pipelines are more
+efficient for this task than reading all documents into Node.js and calculating totals there.
+
+-->Aggregation pipeline:
+   db.orders.aggregate([
+   { $match: { status: "Delivered" } },
+   {
+    $group: {
+      _id: "$restaurant",
+      totalOrders: { $sum: 1 },
+      totalRevenue: { $sum: "$totalAmount" }
+    }
+   },
+    {
+     $project: {
+      _id: 0,
+      restaurant: "$_id",
+      totalOrders: 1,
+      totalRevenue: 1
+    }
+   },
+   { $sort: { totalRevenue: -1 } }
+  ])
+
+  $match: Filters only delivered orders.
+  $group: Groups orders by restaurant and calculates total orders and total revenue.
+  $project: Displays only the required fields.
+  $sort: Sorts the results by total revenue in descending order.
+
+ Aggregation pipelines process data inside MongoDB, reducing data transfer and improving performance.
+ Reading all documents into Node.js and calculating totals there uses more memory, network bandwidth,
+ and processing time.
+
+6.Explain how indexes work in MongoDB and why they reduce read query time. Write
+the command to create a compound index on {customerId: 1, status: 1}. Then evaluate the
+trade-off: under what conditions does adding an index hurt performance, and under what
+conditions is it clearly worth the cost.
+
+--> Indexes store field values in a sorted structure, allowing MongoDB to find documents quickly
+    without scanning the entire collection. This reduces read query time.
+
+    Compound Index Query:
+       db.orders.createIndex({ customerId: 1, status: 1 })
+
+    -Indexes slow down insert, update, and delete operations because the index must also be updated. 
+     They also use extra storage.
+    -Indexes are beneficial when the collection is large and read queries frequently filter or sort 
+     by customerId and status, making searches much faster.
