@@ -1,0 +1,54 @@
+// Task 1: Create Database
+
+use insta_clone
+
+Verify current database:
+ db
+
+// Task 2: Create 'storyAdmin' User
+
+db.createUser({
+    user: "storyAdmin",
+    pwd: "StoryAdmin123",
+    roles: [
+        {
+            role: "dbAdmin",
+            db: "insta_clone"
+        }
+    ]
+});
+
+// Task 3: Create Read-Only User
+
+db.createUser({
+    user: "feedViewer",
+    pwd: "FeedViewer123",
+    roles: [
+        {
+            role: "read",
+            db: "insta_clone"
+        }
+    ]
+});
+
+// Task 4: Simulate Authentication
+
+Login from terminal:
+    "mongosh -u feedViewer -p FeedViewer123 --authenticationDatabase insta_clone"
+
+Switch to database:
+     use insta_clone
+
+Try to insert a document:
+
+db.posts.insertOne({
+    username: "john_doe",
+    caption: "My first post!"
+});
+ 
+ Expected Error:
+    "MongoServerError: not authorized on insta_clone to execute command { insert: "posts", ... }"
+
+// Task 5: List Users
+
+db.getUsers();
