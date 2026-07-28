@@ -1,0 +1,86 @@
+--> Create playlistUser (Read Only) :
+
+- Switch to Music Playlist App database
+ use MusicPlaylistApp
+
+- Create read-only user
+  db.createUser({
+    user: "playlistUser",
+    pwd: "music123",
+    roles: [
+        {
+            role: "read",
+            db: "MusicPlaylistApp"
+        }
+    ]
+  });
+
+
+--> Create foodAdmin User:
+
+- Switch to Food Delivery database
+  use FoodDelivery
+
+- Create admin user
+   db.createUser({
+    user: "foodAdmin",
+    pwd: "zomato@2024",
+    roles: [
+        {
+            role: "dbAdmin",
+            db: "FoodDelivery"
+        },
+        {
+            role: "readWrite",
+            db: "FoodDelivery"
+        }
+    ]
+  });
+
+
+--> Authenticate as playlistUser
+
+
+- Open a new terminal and connect:
+    "mongosh --username playlistUser --password music123 --authenticationDatabase MusicPlaylistApp"
+
+  use MusicPlaylistApp
+
+- Try inserting a document
+  db.playlists.insertOne({
+    name: "Top Hits",
+    songs: 20
+  });
+
+--> Expected Error:
+  - MongoServerError: not authorized on MusicPlaylistApp to execute command { insert: "playlists", ... }
+
+
+
+--> List Users in FoodDelivery
+
+  use FoodDelivery
+
+  db.getUsers();
+
+
+--> Change Password
+
+  use MusicPlaylistApp
+
+  db.changeUserPassword(
+    "playlistUser",
+    "newmusic456"
+  );
+
+- Verify Read Access
+   db.playlists.find();
+
+- Try Write Operation
+   db.playlists.insertOne({
+    name: "Chill Mix",
+    songs: 15
+   });
+
+- Expected Error:
+    MongoServerError: not authorized on MusicPlaylistApp to execute command { insert: "playlists", ... }
