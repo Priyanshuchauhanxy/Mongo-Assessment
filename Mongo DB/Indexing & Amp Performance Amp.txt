@@ -1,0 +1,133 @@
+
+--> Create restaurants collection :
+     
+   use restaurantDB
+
+ db.restaurants.insertMany([
+  {
+    name: "Pizza Palace",
+    cuisine: "Italian",
+    location: "Ahmedabad",
+    rating: 4.7
+  },
+  {
+    name: "Little Italy",
+    cuisine: "Italian",
+    location: "Surat",
+    rating: 4.5
+  },
+  {
+    name: "Dragon Wok",
+    cuisine: "Chinese",
+    location: "Ahmedabad",
+    rating: 4.3
+  },
+  {
+    name: "Spice Villa",
+    cuisine: "Indian",
+    location: "Ahmedabad",
+    rating: 4.8
+  },
+  {
+    name: "Burger Hub",
+    cuisine: "Fast Food",
+    location: "Vadodara",
+    rating: 4.2
+  },
+  {
+    name: "Cafe Delight",
+    cuisine: "Cafe",
+    location: "Ahmedabad",
+    rating: 4.6
+  },
+  {
+    name: "Pizza Corner",
+    cuisine: "Italian",
+    location: "Rajkot",
+    rating: 4.1
+  },
+  {
+    name: "Royal Biryani",
+    cuisine: "Indian",
+    location: "Surat",
+    rating: 4.4
+  },
+  {
+    name: "China Town",
+    cuisine: "Chinese",
+    location: "Ahmedabad",
+    rating: 4.5
+  },
+  {
+    name: "Urban Cafe",
+    cuisine: "Cafe",
+    location: "Surat",
+    rating: 3.9
+  ]);
+
+- Find restaurants with rating above 4
+
+   db.restaurants.find({
+    rating: { $gt: 4 }
+   });
+
+
+--> Single Field Index :
+
+- Before creating index
+
+   db.restaurants.find({
+    cuisine: "Italian"
+   }).explain("executionStats");
+
+- Create index
+   db.restaurants.createIndex({
+    cuisine: 1
+   });
+
+- After creating index
+   db.restaurants.find({
+    cuisine: "Italian"
+   }).explain("executionStats");
+
+--> Compound Index :
+
+ - Create compound index
+   db.restaurants.createIndex({
+    location: 1,
+    rating: 1
+   });
+
+ - Query Ahmedabad restaurants with rating > 4
+   db.restaurants.find({
+    location: "Ahmedabad",
+    rating: { $gt: 4 }
+   }).explain("executionStats");
+
+
+--> Remove Cuisine Index :
+
+ - Drop cuisine index
+   db.restaurants.dropIndex({
+    cuisine: 1
+   });
+
+- Check query performance again
+   db.restaurants.find({
+    cuisine: "Italian"
+   }).explain("executionStats");
+
+
+--> Text Index :
+
+ - Create text index on name
+   db.restaurants.createIndex({
+    name: "text"
+   });
+
+ - Search restaurants containing "Pizza"
+   db.restaurants.find({
+    $text: {
+        $search: "Pizza"
+    }
+   });
