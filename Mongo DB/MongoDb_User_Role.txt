@@ -1,0 +1,58 @@
+-->Create Database :
+
+    use instaAppData
+
+ -Verify current database
+  db
+
+--> Create 'playlistAdmin' UserRole: dbAdmin :
+
+   db.createUser({
+    user: "playlistAdmin",
+    pwd: "music@123",
+    roles: [
+        {
+            role: "dbAdmin",
+            db: "instaAppData"
+        }
+    ]
+   });
+
+
+--> Create 'playlistViewer' UserRole: read :
+
+   db.createUser({
+    user: "playlistViewer",
+    pwd: "view@123",
+    roles: [
+        {
+            role: "read",
+            db: "instaAppData"
+        }
+    ]
+   });
+
+
+--> TASK 4: Test Authentication :
+
+ - Open a new terminal and connect as playlistViewer
+
+ - Command :
+     "mongosh --username playlistViewer --password view@123 --authenticationDatabase instaAppData"
+
+ - Switch to the database
+      use instaAppData
+
+ - Try inserting a document
+   db.playlists.insertOne({
+    name: "Top Hits",
+    songs: 25
+   });
+
+- Expected Error:
+   MongoServerError: not authorized on instaAppData to execute command { insert: "playlists", ... }
+
+
+--> List All Users :
+   
+     db.getUsers();
