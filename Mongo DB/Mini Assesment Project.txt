@@ -1,0 +1,152 @@
+--> Create restaurants collection:
+
+use foodDeliveryDB
+
+db.restaurants.insertMany([
+{
+    restaurant_id: 1,
+    name: "Pizza Palace",
+    cuisine: "Italian",
+    location: "Ahmedabad",
+    average_rating: 4.7
+},
+{
+    restaurant_id: 2,
+    name: "Spice Villa",
+    cuisine: "Indian",
+    location: "Surat",
+    average_rating: 4.5
+},
+{
+    restaurant_id: 3,
+    name: "Dragon Wok",
+    cuisine: "Chinese",
+    location: "Ahmedabad",
+    average_rating: 4.3
+},
+{
+    restaurant_id: 4,
+    name: "Burger Hub",
+    cuisine: "Fast Food",
+    location: "Vadodara",
+    average_rating: 4.2
+},
+{
+    restaurant_id: 5,
+    name: "Cafe Delight",
+    cuisine: "Cafe",
+    location: "Rajkot",
+    average_rating: 4.6
+}
+]);
+
+--> Create orders collection :
+
+db.orders.insertMany([
+{
+    order_id: 101,
+    user_id: 1001,
+    restaurant_id: 1,
+    items: [
+        { item_name: "Margherita Pizza", price: 299 },
+        { item_name: "Garlic Bread", price: 99 }
+    ],
+    total_amount: 398,
+    order_date: new Date("2026-07-25")
+},
+{
+    order_id: 102,
+    user_id: 1002,
+    restaurant_id: 2,
+    items: [
+        { item_name: "Paneer Butter Masala", price: 250 },
+        { item_name: "Butter Naan", price: 40 }
+    ],
+    total_amount: 290,
+    order_date: new Date("2026-07-26")
+},
+{
+    order_id: 103,
+    user_id: 1003,
+    restaurant_id: 1,
+    items: [
+        { item_name: "Veg Pizza", price: 350 },
+        { item_name: "Cold Drink", price: 50 }
+    ],
+    total_amount: 400,
+    order_date: new Date("2026-07-27")
+]);
+
+-->Count Orders per Restaurant :
+
+db.orders.aggregate([
+{
+    $group: {
+        _id: "$restaurant_id",
+        orderCount: { $sum: 1 }
+    }
+}
+]);
+
+--> Top 2 Restaurants by Average Order Amount
+
+db.orders.aggregate([
+{
+    $group: {
+        _id: "$restaurant_id",
+        averageOrderAmount: {
+            $avg: "$total_amount"
+        }
+    }
+},
+{
+    $sort: {
+        averageOrderAmount: -1
+    }
+},
+{
+    $limit: 2
+}
+]);
+
+-->Add delivery_status :
+
+- Update Order 101
+db.orders.updateOne(
+    { order_id: 101 },
+    {
+        $set: {
+            delivery_status: "pending"
+        }
+    }
+);
+
+ - Update Order 102
+db.orders.updateOne(
+    { order_id: 102 },
+    {
+        $set: {
+            delivery_status: "out for delivery"
+        }
+    }
+);
+
+- Update Order 103
+db.orders.updateOne(
+    { order_id: 103 },
+    {
+        $set: {
+            delivery_status: "delivered"
+        }
+    }
+);
+
+- Count Pending Orders
+
+db.orders.countDocuments({
+    delivery_status: "pending"
+});
+
+- View Final Data
+
+db.orders.find().pretty();
